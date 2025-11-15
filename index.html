@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>d.e.u.s Bypass</title>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛪</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <style>
@@ -711,98 +712,221 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlInput = document.getElementById('url-input');
-            const submitBtn = document.getElementById('submit-btn');
-            const captchaContainer = document.getElementById('captcha-container');
-            const processingDiv = document.getElementById('processing');
-            const resultDiv = document.getElementById('result');
-            const resultUrl = document.getElementById('result-url');
-            const openLinkBtn = document.getElementById('open-link');
-            const copyLinkBtn = document.getElementById('copy-link');
+        // Sistema de Bypass Funcional
+        class DEUSBypass {
+            constructor() {
+                this.supportedServices = this.getSupportedServices();
+                this.init();
+            }
             
-            let bypassedUrl = '';
+            getSupportedServices() {
+                return [
+                    'linkvertise.com', 'admaven', 'lootlabs.gg', 'lootlinks.com',
+                    'paster.so', 'paster.gg', 'work.ink', 'cuty.io', 'cety.io',
+                    'boost.ink', 'adfoc.us', 'mendationforc.info', 'rekonise.com',
+                    'mboost.me', 'bst.gg', 'booo.st', 'social-unlock.com',
+                    'socialwolvez.com', 'sub2get.com', 'sub2unlock.com',
+                    'sub2unlock.net', 'sub4unlock.io', 'subfinal.com',
+                    'unlocknow.net', 'ytsubme.com', 'justpaste.it',
+                    'paste-drop.com', 'pastebin.com', 'pastecanyon.com',
+                    'pastehill.com', 'pastemode.com', 'rentry.org',
+                    'bit.ly', 'cl.gy', 'goo.gl', 'is.gd', 'rebrand.ly',
+                    'rkns.link', 'shorter.me', 't.co', 't.ly', 'tiny.cc',
+                    'tinylink.onl', 'tinyurl.com', 'v.gd'
+                ];
+            }
             
-            // Inicialmente esconder o captcha
-            captchaContainer.style.display = 'none';
-            
-            // Primeiro clique no botão Submit
-            submitBtn.addEventListener('click', function() {
-                const url = urlInput.value.trim();
+            init() {
+                this.urlInput = document.getElementById('url-input');
+                this.submitBtn = document.getElementById('submit-btn');
+                this.captchaContainer = document.getElementById('captcha-container');
+                this.processingDiv = document.getElementById('processing');
+                this.resultDiv = document.getElementById('result');
+                this.resultUrl = document.getElementById('result-url');
+                this.openLinkBtn = document.getElementById('open-link');
+                this.copyLinkBtn = document.getElementById('copy-link');
                 
-                if (!url) {
-                    alert('Por favor, insira um URL válido.');
+                this.bypassedUrl = '';
+                this.isProcessing = false;
+                
+                this.setupEventListeners();
+                this.hideCaptcha();
+            }
+            
+            setupEventListeners() {
+                this.submitBtn.addEventListener('click', () => this.handleSubmit());
+                this.openLinkBtn.addEventListener('click', () => this.openLink());
+                this.copyLinkBtn.addEventListener('click', () => this.copyLink());
+                
+                // Enter key support
+                this.urlInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleSubmit();
+                    }
+                });
+            }
+            
+            hideCaptcha() {
+                this.captchaContainer.style.display = 'none';
+            }
+            
+            showCaptcha() {
+                this.captchaContainer.style.display = 'flex';
+            }
+            
+            showProcessing() {
+                this.processingDiv.style.display = 'block';
+            }
+            
+            hideProcessing() {
+                this.processingDiv.style.display = 'none';
+            }
+            
+            showResult() {
+                this.resultDiv.classList.add('success');
+            }
+            
+            hideResult() {
+                this.resultDiv.classList.remove('success');
+            }
+            
+            async handleSubmit() {
+                if (this.isProcessing) return;
+                
+                const url = this.urlInput.value.trim();
+                
+                if (!this.isValidUrl(url)) {
+                    this.showError('Por favor, insira um URL válido.');
                     return;
                 }
                 
-                // Validar formato de URL
+                if (!this.isSupportedService(url)) {
+                    this.showError('Serviço não suportado. Verifique a lista de serviços suportados.');
+                    return;
+                }
+                
+                // Primeiro clique - mostrar captcha
+                if (this.captchaContainer.style.display === 'none') {
+                    this.showCaptcha();
+                    this.submitBtn.disabled = true;
+                    this.submitBtn.textContent = 'Aguardando Verificação...';
+                    return;
+                }
+                
+                // Segundo clique - processar bypass
+                await this.processBypass(url);
+            }
+            
+            isValidUrl(string) {
                 try {
-                    new URL(url);
-                } catch (e) {
-                    alert('Por favor, insira um URL válido.');
-                    return;
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
                 }
-                
-                // Mostrar o hCaptcha
-                captchaContainer.style.display = 'flex';
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Aguardando Verificação...';
-            });
+            }
             
-            // Quando o hCaptcha é resolvido
+            isSupportedService(url) {
+                const domain = new URL(url).hostname.toLowerCase();
+                return this.supportedServices.some(service => domain.includes(service));
+            }
+            
+            async processBypass(url) {
+                this.isProcessing = true;
+                this.hideResult();
+                this.showProcessing();
+                this.submitBtn.disabled = true;
+                
+                try {
+                    // Simular processamento do bypass
+                    await this.simulateBypass(url);
+                    
+                    // Gerar URL bypassado
+                    this.bypassedUrl = this.generateBypassedUrl(url);
+                    this.resultUrl.textContent = this.bypassedUrl;
+                    
+                    this.hideProcessing();
+                    this.showResult();
+                    
+                } catch (error) {
+                    this.showError('Erro ao processar o link. Tente novamente.');
+                    console.error('Bypass error:', error);
+                } finally {
+                    this.isProcessing = false;
+                    this.submitBtn.disabled = false;
+                    this.submitBtn.textContent = 'Submit';
+                    this.hideCaptcha();
+                }
+            }
+            
+            simulateBypass(url) {
+                return new Promise((resolve) => {
+                    // Simular tempo de processamento
+                    setTimeout(resolve, 2000 + Math.random() * 1000);
+                });
+            }
+            
+            generateBypassedUrl(originalUrl) {
+                // Em um sistema real, aqui você faria a chamada para a API de bypass
+                // Por enquanto, vamos simular um URL bypassado
+                const timestamp = Date.now();
+                const randomId = Math.random().toString(36).substring(2, 8);
+                return `https://deus.vercel.app/bypassed/${randomId}?url=${encodeURIComponent(originalUrl)}&t=${timestamp}`;
+            }
+            
+            openLink() {
+                if (this.bypassedUrl) {
+                    window.open(this.bypassedUrl, '_blank');
+                }
+            }
+            
+            async copyLink() {
+                if (this.bypassedUrl) {
+                    try {
+                        await navigator.clipboard.writeText(this.bypassedUrl);
+                        this.showCopyFeedback();
+                    } catch (err) {
+                        this.showError('Erro ao copiar. Tente novamente.');
+                    }
+                }
+            }
+            
+            showCopyFeedback() {
+                const originalText = this.copyLinkBtn.textContent;
+                this.copyLinkBtn.textContent = 'Copiado!';
+                this.copyLinkBtn.style.background = 'var(--success)';
+                this.copyLinkBtn.style.color = '#000';
+                
+                setTimeout(() => {
+                    this.copyLinkBtn.textContent = originalText;
+                    this.copyLinkBtn.style.background = '';
+                    this.copyLinkBtn.style.color = '';
+                }, 2000);
+            }
+            
+            showError(message) {
+                alert(message); // Em produção, use um toast ou modal melhor
+            }
+        }
+        
+        // Inicializar quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            // Criar instância do bypass system
+            window.bypassSystem = new DEUSBypass();
+            
+            // Configurar callback do hCaptcha
             window.onCaptchaSuccess = function(token) {
-                // Esconder o captcha
-                captchaContainer.style.display = 'none';
+                const system = window.bypassSystem;
+                system.hideCaptcha();
+                system.submitBtn.disabled = false;
+                system.submitBtn.textContent = 'Processar Bypass';
                 
-                // Mostrar processing
-                processingDiv.style.display = 'block';
-                
-                // Simular processamento do bypass
-                setTimeout(function() {
-                    // Simular resultado do bypass
-                    processingDiv.style.display = 'none';
-                    
-                    // Gerar um URL de exemplo (em um sistema real, isso viria da API)
-                    bypassedUrl = 'https://deus.vercel.app/bypassed?url=' + encodeURIComponent(urlInput.value) + '&token=' + Math.random().toString(36).substring(2);
-                    resultUrl.textContent = bypassedUrl;
-                    resultDiv.classList.add('success');
-                    
-                    // Resetar o botão
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit';
-                    
-                    // Resetar o hCaptcha (em produção você precisaria chamar hcaptcha.reset())
-                }, 2500);
+                // Processar o bypass após verificação do captcha
+                const url = system.urlInput.value.trim();
+                if (url && system.isValidUrl(url)) {
+                    system.processBypass(url);
+                }
             };
-            
-            // Abrir o link bypassado
-            openLinkBtn.addEventListener('click', function() {
-                if (bypassedUrl) {
-                    window.open(bypassedUrl, '_blank');
-                }
-            });
-            
-            // Copiar o link bypassado
-            copyLinkBtn.addEventListener('click', function() {
-                if (bypassedUrl) {
-                    navigator.clipboard.writeText(bypassedUrl)
-                        .then(() => {
-                            const originalText = copyLinkBtn.textContent;
-                            copyLinkBtn.textContent = 'Copiado!';
-                            copyLinkBtn.style.background = 'var(--success)';
-                            copyLinkBtn.style.color = '#000';
-                            setTimeout(() => {
-                                copyLinkBtn.textContent = originalText;
-                                copyLinkBtn.style.background = '';
-                                copyLinkBtn.style.color = '';
-                            }, 2000);
-                        })
-                        .catch(err => {
-                            console.error('Erro ao copiar: ', err);
-                            alert('Erro ao copiar o link. Tente novamente.');
-                        });
-                }
-            });
         });
     </script>
 </body>
