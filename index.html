@@ -1,1074 +1,231 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>d.e.u.s Bypass</title>
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛪</text></svg>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-    <style>
-        :root {
-            --primary: #0a0a0a;
-            --secondary: #111111;
-            --accent: #1a1a1a;
-            --highlight: #e94560;
-            --text: #ffffff;
-            --text-secondary: #888888;
-            --success: #00ff88;
-            --error: #ff4444;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: var(--primary);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-        
-        /* Efeitos de Fundo */
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        
-        .grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, var(--primary) 21px, transparent 1%) center,
-                linear-gradient(var(--primary) 21px, transparent 1%) center,
-                var(--text-secondary);
-            background-size: 22px 22px;
-            opacity: 0.1;
-        }
-        
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .shape {
-            position: absolute;
-            background: rgba(233, 69, 96, 0.1);
-            border-radius: 50%;
-            filter: blur(40px);
-        }
-        
-        .shape:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 5%;
-            animation: float 15s infinite ease-in-out;
-        }
-        
-        .shape:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            top: 60%;
-            right: 10%;
-            animation: float 12s infinite ease-in-out reverse;
-        }
-        
-        .shape:nth-child(3) {
-            width: 150px;
-            height: 150px;
-            bottom: 20%;
-            left: 20%;
-            animation: float 18s infinite ease-in-out;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--highlight), transparent);
-            animation: scan 4s linear infinite;
-            opacity: 0.3;
-        }
-        
-        @keyframes scan {
-            0% { top: 0%; }
-            100% { top: 100%; }
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Header */
-        header {
-            padding: 30px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo-icon {
-            font-size: 2.8rem;
-            color: var(--highlight);
-            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-        }
-        
-        .logo-text {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--text), var(--highlight));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Hero Section */
-        .hero {
-            padding: 80px 0 60px;
-            text-align: center;
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--text), var(--highlight));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .hero p {
-            font-size: 1.3rem;
-            max-width: 700px;
-            margin: 0 auto 50px;
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-        
-        /* Bypass Form */
-        .bypass-form {
-            background: rgba(20, 20, 20, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto 60px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .bypass-form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--highlight), transparent);
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text);
-        }
-        
-        .input-group {
-            display: flex;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .input-group input {
-            flex: 1;
-            padding: 18px 25px;
-            border: none;
-            background: rgba(10, 10, 10, 0.8);
-            color: var(--text);
-            font-size: 1.1rem;
-            outline: none;
-        }
-        
-        .input-group input:focus {
-            background: rgba(15, 15, 15, 0.9);
-        }
-        
-        .input-group input::placeholder {
-            color: var(--text-secondary);
-        }
-        
-        .input-group button {
-            padding: 0 35px;
-            border: none;
-            background: var(--highlight);
-            color: white;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .input-group button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .input-group button:hover::before {
-            left: 100%;
-        }
-        
-        .input-group button:hover {
-            background: #ff2e4f;
-            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
-        }
-        
-        .input-group button:disabled {
-            background: #444;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        
-        .input-group button:disabled::before {
-            display: none;
-        }
-        
-        .captcha-container {
-            margin: 25px 0;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .processing {
-            text-align: center;
-            padding: 30px;
-            display: none;
-        }
-        
-        .processing i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--highlight);
-            text-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
-        }
-        
-        .processing p {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-        
-        .result {
-            margin-top: 25px;
-            padding: 25px;
-            border-radius: 15px;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .result.success {
-            display: block;
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-        }
-        
-        .result.error {
-            display: block;
-            background: rgba(255, 68, 68, 0.1);
-            border: 1px solid rgba(255, 68, 68, 0.3);
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .result h3 {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .result.success h3 {
-            color: var(--success);
-        }
-        
-        .result.error h3 {
-            color: var(--error);
-        }
-        
-        .result-url {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            word-break: break-all;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .result-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .result-links button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-        }
-        
-        .btn-open {
-            background: var(--success);
-            color: #000;
-        }
-        
-        .btn-open:hover {
-            background: #00cc6a;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
-        }
-        
-        .btn-copy {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
-        
-        .btn-copy:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        /* Features Section */
-        .features {
-            padding: 80px 0;
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            font-size: 2.5rem;
-            background: linear-gradient(45deg, var(--text), var(--highlight));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background: rgba(20, 20, 20, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 35px 30px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--highlight), transparent);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            border-color: rgba(233, 69, 96, 0.3);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: var(--highlight);
-            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            color: var(--text);
-        }
-        
-        .feature-card p {
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-        
-        /* Supported Services */
-        .supported {
-            padding: 80px 0;
-            background: rgba(10, 10, 10, 0.5);
-        }
-        
-        .services-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 40px;
-        }
-        
-        .service-item {
-            background: rgba(20, 20, 20, 0.7);
-            padding: 18px 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .service-item:hover {
-            border-color: rgba(233, 69, 96, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .service-item i {
-            color: var(--highlight);
-            font-size: 1.1rem;
-        }
-        
-        /* Footer */
-        footer {
-            padding: 50px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            color: var(--text-secondary);
-            background: rgba(10, 10, 10, 0.8);
-        }
-        
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin: 25px 0;
-        }
-        
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .footer-links a:hover {
-            color: var(--highlight);
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .logo-text {
-                font-size: 1.6rem;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .input-group input {
-                border-radius: 12px 12px 0 0;
-            }
-            
-            .input-group button {
-                border-radius: 0 0 12px 12px;
-                padding: 18px;
-            }
-            
-            .result-links {
-                flex-direction: column;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .services-list {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Efeitos de Fundo -->
-    <div class="background">
-        <div class="grid-bg"></div>
-        <div class="floating-shapes">
-            <div class="shape"></div>
-            <div class="shape"></div>
-            <div class="shape"></div>
-        </div>
-        <div class="scan-line"></div>
-    </div>
+// ==UserScript==
+// @name          voltar.lol BYPASSER
+// @namespace     voltar.lol
+// @version       1.6.1
+// @author        Ekky
+// @description   Bypass ad-links using the voltar.lol API and get to your destination without ads!
+// @match         *://mega-guy.com/*
+// @match         *://flux.li/*
+// @match         *://loot-link.com/*
+// @match         *://best-links.org/*
+// @match         *://loot-links.com/*
+// @match         *://megaspremium.com/*
+// @match         *://lootdest.com/*
+// @match         *://direct-links.net/*
+// @match         *://risquemega.com/*
+// @match         *://onlyfriends.club/*
+// @match         *://onepiecered.co/*
+// @match         *://multileaks.com/*
+// @match         *://luvsquad-links.com/*
+// @match         *://lootdest.org/*
+// @match         *://free-leaks.com/*
+// @match         *://goldmega.online/*
+// @match         *://realiukzemydre.com/*
+// @match         *://kmendation.com/*
+// @match         *://lootlinks.co/*
+// @match         *://onlyshare.info/*
+// @match         *://leakplugs.com/*
+// @match         *://nswfbox.com/*
+// @match         *://eofmukindwo.com/*
+// @match         *://op-packs.com/*
+// @match         *://thedetective.online/*
+// @match         *://forlinkmeg.com/*
+// @match         *://thegoatpack.org/*
+// @match         *://of-leaks.xyz/*
+// @match         *://links.spacebin.in/*
+// @match         *://supermeg.com/*
+// @match         *://onlyfanessereloaded.com/*
+// @match         *://fanzleaks.com/*
+// @match         *://cemendemons.com/*
+// @match         *://premiummegaz.com/*
+// @match         *://thepremium.online/*
+// @match         *://pasteebins.com/*
+// @match         *://baddiezcentral.com/*
+// @match         *://megazone.website/*
+// @match         *://leak-pragmatic.com/*
+// @match         *://megadumpz.com/*
+// @match         *://thhaven.net/*
+// @match         *://meg4fans.com/*
+// @match         *://depravityweb.co/*
+// @match         *://discordlink.cc/*
+// @match         *://megashub.co/*
+// @match         *://streamergirls.org/*
+// @match         *://your-leaks.com/*
+// @match         *://onlylinksmegas.xyz/*
+// @match         *://pypy.spacebin.in/*
+// @match         *://pypy.in/*
+// @match         *://luvsquad-links.cmo/*
+// @match         *://beast.net.in/*
+// @match         *://hook.beast.net.in/*
+// @match         *://all-fans.online/*
+// @match         *://fansmega.com/*
+// @match         *://worldpacks.co/*
+// @match         *://night-hub.online/*
+// @match         *://dailyofleaks.com/*
+// @match         *://pkofs.com/*
+// @match         *://offree90.com/*
+// @match         *://megadropz.com/*
+// @match         *://onlyfunlink.com/*
+// @match         *://direct-links.org/*
+// @match         *://leaks4you.com/*
+// @match         *://onlylinksmegas.com/*
+// @match         *://direct-link.net/*
+// @match         *://downbadleaks.com/*
+// @match         *://onlyfanscloud.com/*
+// @match         *://missleakz.com/*
+// @match         *://leakszone.online/*
+// @match         *://links-loot.com/*
+// @match         *://holyfanslinks.com/*
+// @match         *://utopianleaks.com/*
+// @match         *://megavip.store/*
+// @match         *://drlinker.com/*
+// @match         *://baddiesheaven.com/*
+// @match         *://of4lm-links.com/*
+// @match         *://holedonly.store/*
+// @match         *://lootlinks.com/*
+// @match         *://free-content.pro/*
+// @match         *://milky-center.com/*
+// @match         *://megaofs.com/*
+// @match         *://bleleadersto.com/*
+// @match         *://link-target.org/*
+// @match         *://daughablelea.com/*
+// @match         *://mymegalinks.com/*
+// @match         *://heroslut.com/*
+// @match         *://tonordersitye.com/*
+// @match         *://vip-linknetwork.com/*
+// @match         *://birdbiss.com/*
+// @match         *://loot-labs.com/*
+// @match         *://lootlabs.com/*
+// @match         *://link-hub.net/*
+// @match         *://locconnect.com/*
+// @match         *://premiumstashdrop.com/*
+// @match         *://lootdest.info/*
+// @match         *://of-area.com/*
+// @match         *://link-target.net/*
+// @match         *://megalnk.com/*
+// @match         *://lootlink.org/*
+// @match         *://nsfwcherry.com/*
+// @match         *://cherrypacks.online/*
+// @match         *://hotstars-leaks.com/*
+// @match         *://onlymega.co/*
+// @match         *://hanimeturks.com/*
+// @match         *://dailyleakz.com/*
+// @match         *://content-hub.club/*
+// @match         *://dailyadultmegas.com/*
+// @match         *://oui-chu.com/*
+// @match         *://megalinks.one/*
+// @match         *://starleakz.com/*
+// @match         *://babeslink.click/*
+// @match         *://ofgirls3x.com/*
+// @match         *://pnp-drops.me/*
+// @match         *://nsfw-paradise.club/*
+// @match         *://key-access.co/*
+// @match         *://leaksmix.com/*
+// @match         *://sensual-leaks.com/*
+// @match         *://ofhub-leaks.com/*
+// @match         *://onlyforfan.online/*
+// @match         *://sweetjuice-mega.com/*
+// @match         *://crip-hub.com/*
+// @match         *://leaksfreeday.com/*
+// @match         *://thotshaven.online/*
+// @match         *://mega-leaked.com/*
+// @match         *://beautifulgirls.social/*
+// @match         *://tavernleaks.com/*
+// @match         *://nudeleaksteenz.com/*
+// @match         *://slutywet.com/*
+// @match         *://leakutopia.site/*
+// @match         *://secret-packs.com/*
+// @match         *://attiktok22.com/*
+// @match         *://pancakes-leaks.com/*
+// @match         *://diamond-leaks.com/*
+// @match         *://lewd-leaks.com/*
+// @match         *://ftbleaks.net/*
+// @match         *://thepytheaven.org/*
+// @match         *://of-region.online/*
+// @match         *://admiregirls-byme.com/*
+// @match         *://mzehoney12.com/*
+// @match         *://herplace.online/*
+// @match         *://megaplugleaks.com/*
+// @match         *://of-kingdom.com/*
+// @match         *://onlyfansmegafolder.com/*
+// @match         *://links.spacebin.in/*
+// @match         *://adfoc.us/*
+// @match         *://boost.ink/*
+// @match         *://cuty.io/*
+// @match         *://www.cuty.io/*
+// @match         *://cety.app/*
+// @match         *://www.cety.app/*
+// @match         *://linkvertise.com/*/*
+// @match         *://mboost.me/*
+// @match         *://bst.gg/*
+// @match         *://booo.st/*
+// @match         *://mendationforc.info/*
+// @match         *://paster.so/*
+// @match         *://paster.gg/*
+// @match         *://rekonise.com/*
+// @match         *://social-unlock.com/*
+// @match         *://www.social-unlock.com/*
+// @match         *://socialwolvez.com/*
+// @match         *://sub2get.com/*
+// @match         *://www.sub2get.com/*
+// @match         *://sub2unlock.com/*
+// @match         *://sub2unlock.io/*
+// @match         *://sub2unlock.net/*
+// @match         *://sub2unlock.online/*
+// @match         *://sub2unlock.top/*
+// @match         *://sub4unlock.pro/*
+// @match         *://sub4unlock.com/*
+// @match         *://sub4unlock.io/*
+// @match         *://subfinal.com/*
+// @match         *://unlocknow.net/*
+// @match         *://v.gd/*
+// @match         *://work.ink/*
+// @match         *://www.work.ink/*
+// @match         *://workink.net/*
+// @match         *://r.work.ink/*
+// @match         *://workink.one/*
+// @match         *://workink.me/*
+// @match         *://ytsubme.com/*
+// @match         *://www.ytsubme.com/*
+// @match         *://esohasl.net/*
+// @match         *://rbscripts.net/*
+// @match         *://link.rbscripts.net/*
+// @downloadURL   https://raw.githubusercontent.com/YxuSinX/userscript/main/voltar-lol.user.js
+// @updateURL     https://github.com/YxuSinX/userscript/raw/refs/heads/main/voltar-lol.user.js
+// @homepageURL   https://voltar.lol
+// @icon          https://i.imgur.com/AeFbszq.png
+// @run-at document-start
+// ==/UserScript==
 
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-cross"></i>
-                    </div>
-                    <div class="logo-text">d.e.u.s Bypass</div>
-                </div>
-            </div>
-        </div>
-    </header>
+(async () => {
+    const config = {
+        time: 10, // Wait time to avoid detections
+        key: '' //Premium key if you have one
+    };
 
-    <section class="hero">
-        <div class="container">
-            <h1>Bypass de Links Premium</h1>
-            <p>Desbloqueie conteúdo premium sem complicações. Cole o link abaixo e deixe o d.e.u.s Bypass fazer o trabalho para você.</p>
-            
-            <div class="bypass-form">
-                <div class="form-group">
-                    <label for="url-input">Cole o link que deseja fazer bypass:</label>
-                    <div class="input-group">
-                        <input type="text" id="url-input" placeholder="https://linkvertise.com/335040/ArceusXMMV44B">
-                        <button id="submit-btn">Submit</button>
-                    </div>
-                </div>
-                
-                <div id="captcha-container" class="captcha-container">
-                    <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001" data-callback="onCaptchaSuccess"></div>
-                </div>
-                
-                <div id="processing" class="processing">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Processing...</p>
-                </div>
-                
-                <div id="result" class="result">
-                    <h3 id="result-title"><i class="fas fa-check-circle"></i> Link Bypassado com Sucesso!</h3>
-                    <div class="result-url" id="result-url"></div>
-                    <div class="result-links" id="result-links">
-                        <button class="btn-open" id="open-link">Abrir Link</button>
-                        <button class="btn-copy" id="copy-link">Copiar Link</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">Por que usar d.e.u.s Bypass?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Proteção Completa</h3>
-                    <p>Nosso sistema de verificação hCaptcha garante que apenas humanos reais estão usando o serviço, protegendo contra abusos.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Rápido e Eficiente</h3>
-                    <p>Processamos seus links em segundos, sem complicações ou atrasos desnecessários. Tecnologia de ponta para melhor performance.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-lock-open"></i>
-                    </div>
-                    <h3>Suporte Amplo</h3>
-                    <p>Compatível com uma ampla gama de serviços de encurtamento e bloqueio de conteúdo. Sempre atualizando nossa base.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="supported">
-        <div class="container">
-            <h2 class="section-title">Serviços Suportados</h2>
-            <div class="services-list">
-                <div class="service-item"><i class="fas fa-check"></i> Linkvertise.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Admaven (Lootlabs.gg/Lootlinks.com)</div>
-                <div class="service-item"><i class="fas fa-check"></i> Paster.so, Paster.gg</div>
-                <div class="service-item"><i class="fas fa-check"></i> Work.ink (all domains)</div>
-                <div class="service-item"><i class="fas fa-check"></i> Cuty.io, Cety.io</div>
-                <div class="service-item"><i class="fas fa-check"></i> Boost.ink</div>
-                <div class="service-item"><i class="fas fa-check"></i> Adfoc.us</div>
-                <div class="service-item"><i class="fas fa-check"></i> Mendationforc.info</div>
-                <div class="service-item"><i class="fas fa-check"></i> Website Development Services</div>
-                <div class="service-item"><i class="fas fa-check"></i> Social Unlock Sites</div>
-                <div class="service-item"><i class="fas fa-check"></i> Rekonise.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Mboost.me, Bst.gg, Booo.st</div>
-                <div class="service-item"><i class="fas fa-check"></i> Social-unlock.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Socialwolvez.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Sub2get.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Sub2unlock.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Sub2unlock.net</div>
-                <div class="service-item"><i class="fas fa-check"></i> Sub4unlock.io</div>
-                <div class="service-item"><i class="fas fa-check"></i> Subfinal.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Unlocknow.net</div>
-                <div class="service-item"><i class="fas fa-check"></i> Ytsubme.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Website support service</div>
-                <div class="service-item"><i class="fas fa-check"></i> Paster Sites</div>
-                <div class="service-item"><i class="fas fa-check"></i> Justpaste.it</div>
-                <div class="service-item"><i class="fas fa-check"></i> Paste-drop.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Pastebin.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Pastecanyon.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Pastehill.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Pastemode.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> Rentry.org</div>
-                <div class="service-item"><i class="fas fa-check"></i> URL Shorteners</div>
-                <div class="service-item"><i class="fas fa-check"></i> Bit.ly</div>
-                <div class="service-item"><i class="fas fa-check"></i> Cl.gy</div>
-                <div class="service-item"><i class="fas fa-check"></i> Goo.gl</div>
-                <div class="service-item"><i class="fas fa-check"></i> Is.Gd</div>
-                <div class="service-item"><i class="fas fa-check"></i> Rebrand.ly</div>
-                <div class="service-item"><i class="fas fa-check"></i> Rkns.link</div>
-                <div class="service-item"><i class="fas fa-check"></i> Shorter.me</div>
-                <div class="service-item"><i class="fas fa-check"></i> T.co</div>
-                <div class="service-item"><i class="fas fa-check"></i> T.ly</div>
-                <div class="service-item"><i class="fas fa-check"></i> Tiny.cc</div>
-                <div class="service-item"><i class="fas fa-check"></i> Tinylink.onl</div>
-                <div class="service-item"><i class="fas fa-check"></i> Tinyurl.com</div>
-                <div class="service-item"><i class="fas fa-check"></i> V.gd</div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="#">Termos de Serviço</a>
-                <a href="#">Política de Privacidade</a>
-                <a href="#">Contato</a>
-            </div>
-            <p>&copy; 2023 d.e.u.s Bypass. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Sistema de Bypass REAL com APIs funcionais
-        class DEUSBypass {
-            constructor() {
-                this.supportedServices = this.getSupportedServices();
-                this.bypassAPIs = this.getBypassAPIs();
-                this.init();
-            }
-            
-            getSupportedServices() {
-                return [
-                    'linkvertise.com',
-                    'admaven.com', 'lootlabs.gg', 'lootlinks.com',
-                    'paster.so', 'paster.gg', 
-                    'work.ink', 'workink.net', 'workink.one', 'workink.me',
-                    'cuty.io', 'cety.app',
-                    'boost.ink',
-                    'adfoc.us',
-                    'mendationforc.info',
-                    'rekonise.com',
-                    'mboost.me', 'bst.gg', 'booo.st',
-                    'social-unlock.com',
-                    'socialwolvez.com',
-                    'sub2get.com',
-                    'sub2unlock.com', 'sub2unlock.io', 'sub2unlock.net', 'sub2unlock.online', 'sub2unlock.top',
-                    'sub4unlock.pro', 'sub4unlock.com', 'sub4unlock.io',
-                    'subfinal.com',
-                    'unlocknow.net',
-                    'ytsubme.com',
-                    'justpaste.it',
-                    'paste-drop.com',
-                    'pastebin.com',
-                    'pastecanyon.com',
-                    'pastehill.com',
-                    'pastemode.com',
-                    'rentry.org',
-                    'bit.ly',
-                    'cl.gy',
-                    'goo.gl',
-                    'is.gd',
-                    'rebrand.ly',
-                    'rkns.link',
-                    'shorter.me',
-                    't.co',
-                    't.ly',
-                    'tiny.cc',
-                    'tinylink.onl',
-                    'tinyurl.com',
-                    'v.gd'
-                ];
-            }
-            
-            getBypassAPIs() {
-                return {
-                    // APIs públicas de bypass
-                    'linkvertise.com': [
-                        'https://bypass.vip/api/bypass?url=',
-                        'https://api.bypass.vip/bypass?url='
-                    ],
-                    'adfoc.us': [
-                        'https://bypass.vip/api/adfocus?url=',
-                        'https://api.bypass.vip/adfocus?url='
-                    ],
-                    'boost.ink': [
-                        'https://bypass.vip/api/boostink?url='
-                    ],
-                    'default': [
-                        'https://bypass.vip/api/generic?url=',
-                        'https://api.bypass.vip/bypass?url='
-                    ]
-                };
-            }
-            
-            init() {
-                this.urlInput = document.getElementById('url-input');
-                this.submitBtn = document.getElementById('submit-btn');
-                this.captchaContainer = document.getElementById('captcha-container');
-                this.processingDiv = document.getElementById('processing');
-                this.resultDiv = document.getElementById('result');
-                this.resultTitle = document.getElementById('result-title');
-                this.resultUrl = document.getElementById('result-url');
-                this.resultLinks = document.getElementById('result-links');
-                this.openLinkBtn = document.getElementById('open-link');
-                this.copyLinkBtn = document.getElementById('copy-link');
-                
-                this.bypassedUrl = '';
-                this.isProcessing = false;
-                this.captchaVerified = false;
-                
-                this.setupEventListeners();
-                this.hideCaptcha();
-                this.hideResult();
-            }
-            
-            setupEventListeners() {
-                this.submitBtn.addEventListener('click', () => this.handleSubmit());
-                this.openLinkBtn.addEventListener('click', () => this.openLink());
-                this.copyLinkBtn.addEventListener('click', () => this.copyLink());
-                
-                this.urlInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.handleSubmit();
-                    }
-                });
-            }
-            
-            hideCaptcha() {
-                this.captchaContainer.style.display = 'none';
-            }
-            
-            showCaptcha() {
-                this.captchaContainer.style.display = 'flex';
-            }
-            
-            showProcessing() {
-                this.processingDiv.style.display = 'block';
-            }
-            
-            hideProcessing() {
-                this.processingDiv.style.display = 'none';
-            }
-            
-            showResult(type, message, url = '') {
-                this.resultDiv.className = 'result ' + type;
-                this.resultTitle.innerHTML = type === 'success' 
-                    ? '<i class="fas fa-check-circle"></i> ' + message
-                    : '<i class="fas fa-times-circle"></i> ' + message;
-                
-                if (url) {
-                    this.resultUrl.textContent = url;
-                    this.resultUrl.style.display = 'block';
-                    this.resultLinks.style.display = 'flex';
-                    this.bypassedUrl = url;
-                } else {
-                    this.resultUrl.style.display = 'none';
-                    this.resultLinks.style.display = 'none';
-                }
-                
-                this.resultDiv.style.display = 'block';
-            }
-            
-            hideResult() {
-                this.resultDiv.style.display = 'none';
-            }
-            
-            async handleSubmit() {
-                if (this.isProcessing) return;
-                
-                const url = this.urlInput.value.trim();
-                
-                if (!this.isValidUrl(url)) {
-                    this.showError('Por favor, insira um URL válido.');
-                    return;
-                }
-                
-                if (!this.captchaVerified) {
-                    this.showCaptcha();
-                    this.submitBtn.disabled = true;
-                    this.submitBtn.textContent = 'Aguardando Verificação...';
-                    return;
-                }
-                
-                await this.processBypass(url);
-            }
-            
-            isValidUrl(string) {
-                try {
-                    new URL(string);
-                    return true;
-                } catch (_) {
-                    return false;
-                }
-            }
-            
-            getServiceDomain(url) {
-                try {
-                    const domain = new URL(url).hostname.toLowerCase();
-                    return this.supportedServices.find(service => domain.includes(service));
-                } catch (error) {
-                    return null;
-                }
-            }
-            
-            async processBypass(url) {
-                this.isProcessing = true;
-                this.hideResult();
-                this.showProcessing();
-                this.submitBtn.disabled = true;
-                
-                try {
-                    const serviceDomain = this.getServiceDomain(url);
-                    
-                    if (!serviceDomain) {
-                        this.showError('Serviço não suportado. Verifique a lista de serviços suportados abaixo.');
-                        return;
-                    }
-                    
-                    // Fazer bypass REAL
-                    const bypassedUrl = await this.makeRealBypass(url, serviceDomain);
-                    
-                    if (bypassedUrl) {
-                        this.hideProcessing();
-                        this.showResult('success', 'Link Bypassado com Sucesso!', bypassedUrl);
-                    } else {
-                        this.showError('Não foi possível fazer o bypass. Tente novamente.');
-                    }
-                    
-                } catch (error) {
-                    this.showError('Erro ao processar o link. Tente novamente.');
-                    console.error('Bypass error:', error);
-                } finally {
-                    this.isProcessing = false;
-                    this.submitBtn.disabled = false;
-                    this.submitBtn.textContent = 'Submit';
-                    this.captchaVerified = false;
-                    this.hideCaptcha();
-                }
-            }
-            
-            async makeRealBypass(originalUrl, serviceDomain) {
-                // Tentar diferentes APIs de bypass
-                const apis = this.bypassAPIs[serviceDomain] || this.bypassAPIs['default'];
-                
-                for (const api of apis) {
-                    try {
-                        const bypassedUrl = await this.tryBypassAPI(api, originalUrl);
-                        if (bypassedUrl && this.isValidUrl(bypassedUrl)) {
-                            return bypassedUrl;
-                        }
-                    } catch (error) {
-                        console.log(`API ${api} falhou, tentando próxima...`);
-                        continue;
-                    }
-                }
-                
-                // Se todas as APIs falharem, usar método alternativo
-                return await this.alternativeBypass(originalUrl, serviceDomain);
-            }
-            
-            async tryBypassAPI(apiUrl, originalUrl) {
-                const url = apiUrl + encodeURIComponent(originalUrl);
-                
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error('API não respondeu');
-                }
-                
-                const data = await response.json();
-                
-                // Diferentes APIs retornam formatos diferentes
-                if (data.destination) return data.destination;
-                if (data.bypassed) return data.bypassed;
-                if (data.url) return data.url;
-                if (data.result) return data.result;
-                
-                return null;
-            }
-            
-            async alternativeBypass(originalUrl, serviceDomain) {
-                // Método alternativo para quando as APIs falham
-                // Simula o comportamento de bypass baseado no serviço
-                
-                if (serviceDomain === 'linkvertise.com') {
-                    // Para Linkvertise, extrair o ID e redirecionar
-                    const match = originalUrl.match(/linkvertise\.com\/(\d+)/);
-                    if (match) {
-                        return `https://redirect-linkvertise.com/${match[1]}`;
-                    }
-                }
-                
-                if (serviceDomain === 'adfoc.us') {
-                    // Para AdFocus, usar método específico
-                    return originalUrl.replace('adfoc.us', 'bypass-adfocus.com');
-                }
-                
-                // Para outros serviços, retornar um link de exemplo
-                // EM PRODUÇÃO: Implementar lógica específica para cada serviço
-                return `https://direct-link.com/?bypassed=${encodeURIComponent(originalUrl)}`;
-            }
-            
-            showError(message) {
-                this.hideProcessing();
-                this.showResult('error', message);
-                this.submitBtn.disabled = false;
-                this.submitBtn.textContent = 'Submit';
-                this.captchaVerified = false;
-                this.hideCaptcha();
-            }
-            
-            openLink() {
-                if (this.bypassedUrl) {
-                    window.open(this.bypassedUrl, '_blank');
-                }
-            }
-            
-            async copyLink() {
-                if (this.bypassedUrl) {
-                    try {
-                        await navigator.clipboard.writeText(this.bypassedUrl);
-                        this.showCopyFeedback();
-                    } catch (err) {
-                        this.showError('Erro ao copiar. Tente novamente.');
-                    }
-                }
-            }
-            
-            showCopyFeedback() {
-                const originalText = this.copyLinkBtn.textContent;
-                this.copyLinkBtn.textContent = 'Copiado!';
-                this.copyLinkBtn.style.background = 'var(--success)';
-                this.copyLinkBtn.style.color = '#000';
-                
-                setTimeout(() => {
-                    this.copyLinkBtn.textContent = originalText;
-                    this.copyLinkBtn.style.background = '';
-                    this.copyLinkBtn.style.color = '';
-                }, 2000);
-            }
+    const originalCreateElement = document.createElement.bind(document);
+    document.createElement = function (elementName) {
+        const element = originalCreateElement(elementName);
+        if (elementName.toLowerCase() === 'script') {
+            element.setAttribute('type', 'text/plain');
         }
-        
-        // Inicializar sistema
-        document.addEventListener('DOMContentLoaded', () => {
-            window.bypassSystem = new DEUSBypass();
-            
-            window.onCaptchaSuccess = function(token) {
-                const system = window.bypassSystem;
-                system.captchaVerified = true;
-                system.hideCaptcha();
-                system.submitBtn.disabled = false;
-                system.submitBtn.textContent = 'Processar Bypass';
-                
-                const url = system.urlInput.value.trim();
-                if (url && system.isValidUrl(url)) {
-                    system.processBypass(url);
-                }
-            };
-        });
-    </script>
-</body>
-</html>
+        return element;
+    };
+
+    document.documentElement.innerHTML = `<html><head><title>voltar.lol USERSCRIPT</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>html,body{height:100%;margin:0;padding:0;}body{min-height:100vh;background:linear-gradient(135deg,#331c3c 0%,#1c171d 100%);color:#e9d8fd;font-family:'Inter',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}.redirect-logo{width:96px;height:96px;margin-bottom:2rem;border-radius:16px;box-shadow:0 4px 32px 0 #4c245c44;}.redirect-msg{font-size:2.2rem;font-weight:700;color:#e9d8fd;margin-bottom:1rem;letter-spacing:1px;text-shadow:0 2px 8px #1c171d88;}.redirect-desc{font-size:1.1rem;color:#bfa6e6;margin-bottom:2.5rem;}.spinner{margin:0 auto 1.5rem auto;width:48px;height:48px;border:6px solid #a78bfa;border-top:6px solid #34d399;border-radius:50%;animation:spin 1s linear infinite;}@keyframes spin{100%{transform:rotate(360deg);}}.voltar-bar{width:320px;height:6px;background:linear-gradient(90deg,#a78bfa,#f472b6,#34d399);border-radius:3px;margin:2rem auto 0 auto;box-shadow:0 2px 12px #4c245c44;animation:barload 1.5s linear infinite;}@keyframes barload{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}</style></head><body><img src="https://voltar.lol/images/voltar_icon.png" alt="voltar.lol" class="redirect-logo" /><div class="redirect-msg">Redirecting...</div><div class="redirect-desc">Please wait while we send you to the bypass page.</div><div class="spinner"></div><div class="voltar-bar"></div></body></html>`;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect');
+
+    if (redirectUrl && redirectUrl.includes('https://flux.li/android/external/main.php')) {
+        document.body.innerHTML = `<h1>voltar.lol userscript</h1><h2>Fluxus implements some extra security checks to detect bypasses so we can't automatically redirect you.</h2><h3><a href="${redirectUrl}">Click here to redirect</a></h3>`;
+        return;
+    } else if (redirectUrl) {
+        location.href = redirectUrl;
+        return;
+    }
+
+    setTimeout(() => {
+        location.href = `https://voltar.lol/userscript.html?url=${encodeURIComponent(location.href)}&time=${config.time}&key=${config.key}`;
+    }, 1850);
+})();
